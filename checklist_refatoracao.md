@@ -17,12 +17,12 @@
 
 ## 💾 `src/persistencia.py`
 - [X] Trocar `open(...)` por `with open(...) as arq:` em todas as funções
-- [ ] Verificar se os arquivos de índice existem antes de tentar carregá-los (importante para o `-e`)
+- [X] Verificar se os arquivos de índice existem antes de tentar carregá-los (importante para o `-e`)
 
 ## ⚙️ `src/operacoes.py`
-- [ ] Corrigir formato de saída do `busca_pri`: remover `:` após "ID"
+- [X] Corrigir formato de saída do `busca_pri`: remover `:` após "ID"
 - [ ] Corrigir `busca_sec_genero` e `busca_sec_publicadora`:
-  - [ ] Remover `print("Registro removido")` — ignorar silenciosamente
+  - [X] Remover `print("Registro removido")` — ignorar silenciosamente
   - [ ] Mover o `print` do cabeçalho para tratar o cenário de (0 registros) quando a chave não existir
 - [ ] Implementar `insercao` de verdade:
   - [ ] Verificar duplicata no índice primário

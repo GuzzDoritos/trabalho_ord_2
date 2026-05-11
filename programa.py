@@ -7,29 +7,32 @@ def main():
     '''Esse programa lê os dados gravados no arquivo criado pelo programa
     escreve_registros
     Os registros devem ser lidos do arquivo um a um e apresentados em tela'''
-    NOME_ARQ = input("Digite o nome do arquivo para leitura: ")
+    NOME_ARQ = 'games.dat'
     ENTRADA = open(NOME_ARQ, 'rb')# n preciso do encoding pq é binário, e o encoding é para arquivos de texto, e aqui eu vou ler bytes, entao n preciso do encoding
-    registros = lista_de_registros(ENTRADA)
 
-    lista_inv = []
-    indicesec = construir_indice_sec(registros, lista_inv)
-    print(indicesec)
+    if argv[1] == '-b':
+        print("Modo de construção de índice")
 
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        lista_inv = []
+        indicesec = construir_indice_sec(registros, lista_inv)
+        print(indicesec)
 
-    indicepri = construir_indice_pri(registros)
-    print(indicepri)
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
-    busca_pri("348", indicepri, ENTRADA)
-    busca_sec_genero("Action", indicesec[0], lista_inv, ENTRADA)
-    busca_sec_publicadora("Electronic Arts", indicesec[1], lista_inv, ENTRADA)
+        indicepri = construir_indice_pri(registros)
+        print(indicepri)
+        registros = lista_de_registros(ENTRADA)
 
+    elif argv[1] == '-e':
+        print("Modo de leitura de arquivo de operações")
 
-    print(ENTRADA.tell())
-    print(registros)
+        busca_pri("348", indicepri, ENTRADA)
+        busca_sec_genero("Action", indicesec[0], lista_inv, ENTRADA)
+        busca_sec_publicadora("Electronic Arts", indicesec[1], lista_inv, ENTRADA)
 
-    # lista_inv = construir_lista_inv(registros)
-    # print(lista_inv)
+    elif argv[1] == '-c':
+        print("Modo compactação do arquivo")
+
     ENTRADA.close()
 '''
 def importa_registros(arquivo):

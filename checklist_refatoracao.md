@@ -21,9 +21,9 @@
 
 ## ⚙️ `src/operacoes.py`
 - [X] Corrigir formato de saída do `busca_pri`: remover `:` após "ID"
-- [ ] Corrigir `busca_sec_genero` e `busca_sec_publicadora`:
+- [X] Corrigir `busca_sec_genero` e `busca_sec_publicadora`:
   - [X] Remover `print("Registro removido")` — ignorar silenciosamente
-  - [ ] Mover o `print` do cabeçalho para tratar o cenário de (0 registros) quando a chave não existir
+  - [X] Mover o `print` do cabeçalho para tratar o cenário de (0 registros) quando a chave não existir
 - [ ] Implementar `insercao` de verdade:
   - [ ] Verificar duplicata no índice primário
   - [ ] Serializar e escrever no final do `games.dat`

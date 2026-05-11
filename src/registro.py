@@ -1,17 +1,17 @@
 def lista_de_registros(arquivo):
-    BUFFER = le_registro(arquivo)
     lista = []
-    byte_off_set = 0
+
+    byte_off_set = arquivo.tell()
+    BUFFER = le_registro(arquivo)
 
     while BUFFER:
-        lista_aux = []
-        lista_campos = BUFFER.rstrip('|').split('|')
-        lista_aux.append(byte_off_set) #uma tupla com o primeiro elemento da lista campos (id) e byteoffset dele
-        for campo in lista_campos:
-            lista_aux.append(campo)
-        byte_off_set = arquivo.tell() #posição do seek agora
+        if BUFFER[0] != '*':
+            lista_campos = BUFFER.rstrip('|').split('|')
+            lista_aux = [byte_off_set, int(lista_campos[0])] + lista_campos[1:]
+            lista.append(lista_aux)
+
+        byte_off_set = arquivo.tell()
         BUFFER = le_registro(arquivo) #move o seek pro próximo, "incremento"
-        lista.append(lista_aux)
     return lista
 
 def le_registro(arquivo):

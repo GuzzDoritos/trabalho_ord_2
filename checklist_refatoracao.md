@@ -14,14 +14,14 @@
 ## 📖 `src/registro.py`
 
 - [X] Corrigir `le_registro`: checar `if len(tam) < 2` em vez de depender do valor 0
-- [ ] Corrigir byte-offset em `lista_de_registros`: guardar `arquivo.tell()` **antes** de chamar `le_registro`, não depois
-- [ ] Ignorar registros removidos (`*`) em `lista_de_registros` para não indexá-los no `-b`
+- [X] Corrigir byte-offset em `lista_de_registros`: guardar `arquivo.tell()` **antes** de chamar `le_registro`, não depois
+- [X] Ignorar registros removidos (`*`) em `lista_de_registros` para não indexá-los no `-b`
 
 ---
 
 ## 📊 `src/indices.py`
 
-- [ ] Corrigir ordenação do índice primário para ser numérica:
+- [X] Corrigir ordenação do índice primário para ser numérica:
   ```python
   indice_pri.sort(key=lambda x: int(x[0]))
   ```

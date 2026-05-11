@@ -1,3 +1,5 @@
+from struct import calcsize
+
 ARQUIVO = "data/games.dat"
 
 #CONSTANTES
@@ -9,3 +11,4 @@ FORMATO_INV = 'qii' #3 inteiros de 8bytes e 4 bytes e 4 bytes # q = 8 bytes, i =
 SIZEOF_PRI = calcsize(FORMATO_PRI)
 SIZEOF_TAM = calcsize(FORMATO_TAM)
 SIZEOF_INV = calcsize(FORMATO_INV)
+SIZEOF_IDX = calcsize(FORMATO_IDX)

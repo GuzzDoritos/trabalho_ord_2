@@ -1,4 +1,3 @@
 *.lst
 *.ind
-*.dat
-/data
+*/__pycache__

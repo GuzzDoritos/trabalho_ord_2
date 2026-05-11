@@ -1,0 +1,4 @@
+*.lst
+*.ind
+*.dat
+*/__pycache__

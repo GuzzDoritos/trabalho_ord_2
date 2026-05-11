@@ -1,7 +1,7 @@
 from sys import argv
 from struct import pack, unpack, calcsize
 
-arquivo = "games.dat"
+arquivo = "data/games.dat"
 
 #CONSTANTES
 FORMATO_PRI = "iq"  #2 inteiros de 4 bytes e 8 bytes # i = 4 bytes, q = 8 bytes
@@ -330,15 +330,3 @@ if __name__ == "__main__":
     main()
 
 
-#O QUE FALTA
-'''
-Inserção
-Remoção
-Compactação
-
-Sobrescrever índices no -b
-Persistência dos índices no -e
-Falta ignorar removidos na construção dos índices no -b
-Tratamento obrigatório quando índices não existirem no -e
-ver se vai arq.close() ou with as
-'''

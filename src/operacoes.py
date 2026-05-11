@@ -1,3 +1,5 @@
+from src.registro import le_registro
+
 #================== BUSCA ======================
 
 def busca_binaria(chave, indice_pri): #código da valéria

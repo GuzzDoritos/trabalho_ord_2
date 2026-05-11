@@ -1,3 +1,13 @@
+from src.constantes import FORMATO_PRI, 
+                           FORMATO_TAM, 
+                           FORMATO_IDX, 
+                           FORMATO_INV, 
+                           SIZEOF_PRI,
+                           SIZEOF_TAM,
+                           SIZEOF_INV
+
+from struct import pack, unpack, calcsize
+
 def arq_indice_prim(indice_pri): #msm lógica do arq_indice_listainv
     #12 bytes por entrada: 4 (id) + 8 (offset)
     ##id (chave) + referencia (byteoffset) = indice_pri

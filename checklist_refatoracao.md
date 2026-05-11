@@ -3,11 +3,11 @@
 ## 🗂️ Organização e Imports
 
 - [X] Criar `src/constantes.py` com `FORMATO_PRI`, `FORMATO_TAM`, `FORMATO_IDX`, `FORMATO_INV`, `SIZEOF_*`
-- [ ] Adicionar imports de `constantes.py` em `persistencia.py`
-- [ ] Adicionar `from struct import pack, unpack, calcsize` em `persistencia.py`
-- [ ] Adicionar `from src.registro import le_registro` em `operacoes.py`
+- [x] Adicionar imports de `constantes.py` em `persistencia.py`
+- [X] Adicionar `from struct import pack, unpack, calcsize` em `persistencia.py`
+- [X] Adicionar `from src.registro import le_registro` em `operacoes.py`
 - [ ] Adicionar `src/__init__.py` vazio (se necessário)
-- [ ] Criar `.gitignore` com `data/` para ignorar `.dat`, `.ind`, `.lst`
+- [X] Criar `.gitignore` com `data/` para ignorar `.dat`, `.ind`, `.lst`
 
 ---
 

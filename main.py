@@ -1,49 +1,39 @@
 from sys import argv
-from struct import pack, unpack, calcsize
 from src.registro import lista_de_registros
 from src.indices import construir_indice_pri, construir_indice_sec
+from src.persistencia import (
+    arq_indice_prim, arq_indice_genero,
+    arq_indice_publicadora, arq_indice_listainv
+)
 
-arquivo = "data/games.dat"
+ARQUIVO = "data/games.dat"
+
+def modo_b(): # Construção de índices
+    with open(ARQUIVO, 'rb') as entrada:
+        registros = lista_de_registros(entrada)
+    
+    lista_inv = []
+    indice_pri = construir_indice_pri(registros)
+    indice_sec = construir_indice_sec(registros, lista_inv)
+
+    arq_indice_prim(indice_pri)
+    arq_indice_genero(indice_sec[0])
+    arq_indice_publicadora(indice_sec[1])
+    arq_indice_listainv(lista_inv)
+
+def modo_e(arquivo_operacoes): # Execução do arquivo de operações
+    pass  # TODO
+
+def modo_c(): # Modo de compactação do arquivo
+    pass  # TODO
 
 def main():
-    '''Esse programa lê os dados gravados no arquivo criado pelo programa
-    escreve_registros
-    Os registros devem ser lidos do arquivo um a um e apresentados em tela'''
-    NOME_ARQ = 'games.dat'
-    ENTRADA = open(NOME_ARQ, 'rb')
-
     if argv[1] == '-b':
-        print("Modo de construção de índice")
-
-        lista_inv = []
-        indicesec = construir_indice_sec(registros, lista_inv)
-        indicepri = construir_indice_pri(registros)
-        registros = lista_de_registros(ENTRADA)
-
+        modo_b()
     elif argv[1] == '-e':
-        print("Modo de leitura de arquivo de operações")
-
+        modo_e(argv[2])
     elif argv[1] == '-c':
-        print("Modo compactação do arquivo")
-
-
-    arq_indice_prim(indicepri)
-    carregado = arq_indice_prim(None)
-    print(carregado)
-
-    arq_indice_genero(indicesec[0])
-    carregado2 = arq_indice_genero(None)
-    print(carregado2)
-
-    arq_indice_publicadora(indicesec[1])
-    carregado3 = arq_indice_publicadora(None)
-    print(carregado3)
-
-    arq_indice_listainv(lista_inv)
-    carregado4 = arq_indice_listainv(None)
-    print(carregado4)
-
-    ENTRADA.close()
+        modo_c()
 
 if __name__ == "__main__":
     main()

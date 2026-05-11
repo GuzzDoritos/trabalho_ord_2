@@ -1,0 +1,7 @@
+- [ ] Inserção
+- [ ] Remoção
+- [ ] Sobrescrever índices no -b
+- [ ] Persistência dos índices no -e
+- [ ] Ignorar removidos na construção dos índices no -b
+- [ ] Tratamento obrigatório quando índices não existirem no -e
+- [ ] ver se vai arq.close() ou with as

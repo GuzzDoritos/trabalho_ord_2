@@ -45,8 +45,8 @@
 - [X] Modo `-b`: Sobrescrever arquivos de índice existentes e persistir ao final
 - [X] Modo `-b`: Remover prints de debug
 - [ ] Modo `-e`:
-  - [ ] Verificar existência dos 5 arquivos antes de iniciar; encerrar com erro se faltar algum
-  - [ ] Carregar os 4 índices em memória
+  - [X] Verificar existência dos 5 arquivos antes de iniciar; encerrar com erro se faltar algum
+  - [X] Carregar os 4 índices em memória
   - [ ] Abrir e parsear o arquivo de operações (linha a linha)
   - [ ] Despachar cada linha para a função correspondente
   - [ ] Persistir os 4 índices no disco ao encerrar a execução

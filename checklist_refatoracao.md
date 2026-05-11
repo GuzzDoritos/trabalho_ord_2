@@ -30,7 +30,7 @@
 
 ## 💾 `src/persistencia.py`
 
-- [ ] Trocar `open(...)` por `with open(...) as arq:` em todas as funções
+- [X] Trocar `open(...)` por `with open(...) as arq:` em todas as funções
 - [ ] Verificar se os arquivos existem antes de abrir no modo leitura (para o `-e`)
 
 ---

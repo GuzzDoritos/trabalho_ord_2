@@ -1,4 +1,4 @@
-*.lst
-*.ind
-*.dat
+data/*.lst
+data/*.ind
+data/*.dat
 */__pycache__

@@ -1,5 +1,5 @@
 ## modo `-e`
-- [ ] Ler e fazer o parse do arquivo de operações (linha a linha) dentro do `with open` no `modo_e`.
+- [x] Ler e fazer o parse do arquivo de operações (linha a linha) dentro do `with open` no `modo_e`.
 - [ ] Criar o despachante (if/elif): identificar o comando (`bp`, `bs1`, `bs2`, `i`, `r`) e chamar a função correspondente em `operacoes.py` passando os parâmetros corretos.
 - [ ] **Very important:** Salvar os 4 índices (primário, gênero, publicadora, lista invertida) de volta no disco usando as funções de `persistencia.py` no **final** da execução do `modo_e` (depois do loop do arquivo de operações).
 

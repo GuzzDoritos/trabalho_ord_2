@@ -7,6 +7,7 @@ from src.persistencia import (
     arq_indice_publicadora, arq_indice_listainv
 )
 from src.operacoes import *
+from src.compactacao import compactacao
 
 ARQUIVO = "data/games.dat"
 
@@ -72,10 +73,13 @@ def modo_e(arquivo_operacoes):
                     case 'r':
                         print('remoção', ' '.join(comando[1:]))
                         print('\n')
-        
+
 
 def modo_c(): # Modo de compactação do arquivo
-    pass  # TODO
+    compactacao()
+    
+
+    
 
 def main():
     if argv[1] == '-b':

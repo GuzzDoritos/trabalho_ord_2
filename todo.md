@@ -3,7 +3,7 @@
 - [x] Criar o despachante (if/elif): identificar o comando (`bp`, `bs1`, `bs2`, `i`, `r`) e chamar a função correspondente em `operacoes.py` passando os parâmetros corretos.
 - [ ] **Very important:** Salvar os 4 índices (primário, gênero, publicadora, lista invertida) de volta no disco usando as funções de `persistencia.py` no **final** da execução do `modo_e` (depois do loop do arquivo de operações).
 
-## implementação da `insercao` (`src/operacoes.py`)
+## implementação da `insercao` (`src/operacoes.py`) - gu
 - [ ] Duplicidade: checar se o ID já existe no `indice_pri`. Se sim, imprimir: `ID duplicado! Registro descartado.`.
 - [ ] **Escrita no disco:** 
   - [ ] Calcular o tamanho do registro (serialização: `ID|Nome|Ano|Gênero|Publicadora|Plataforma|`).
@@ -20,7 +20,7 @@
 - [ ] **Remoção Lógica (Memória):** - [ ] Remover a entrada do ID no `indice_pri`.
   - [ ] *Desafio:* Atualizar a `lista_inv` para remover/pular esse ID nas cadeias de ponteiros de gênero e publicadora correspondentes.
 
-## 🗜️ Modo `-c`: Compactação (`src/compactacao.py` e `main.py`)
+## 🗜️ Modo `-c`: Compactação (`src/compactacao.py` e `main.py`) - isa (quinta)
 - [ ] Chamar a função de compactação na função `modo_c` do `main.py`.
 - [ ] **Lógica da compactação:**
   - [ ] Ler o `games.dat` inteiro, pulando os registros que começam com `*`.

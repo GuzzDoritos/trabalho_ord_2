@@ -6,6 +6,7 @@ from src.persistencia import (
     arq_indice_prim, arq_indice_genero,
     arq_indice_publicadora, arq_indice_listainv
 )
+from src.operacoes import *
 
 ARQUIVO = "data/games.dat"
 
@@ -49,8 +50,29 @@ def modo_e(arquivo_operacoes):
     lista_inv = arq_indice_listainv(None)
     
     # abrir o games.dat e o arquivo de operações
-    with open("data/games.dat", "rb+") as arq_games, open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
-        pass # TODO
+    with open("data/games.dat", "rb+") as arq_games:
+        with open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
+            buffer = arq_ops.readline()
+            while buffer:
+                comando = buffer.split()
+                buffer = arq_ops.readline()
+                match comando[0]:
+                    case 'bp':
+                        busca_pri(int(comando[1]), indice_pri, arq_games)
+                        print('\n')
+                    case 'bs1':
+                        busca_sec_genero(' '.join(comando[1:]), indice_sec_genero, lista_inv, arq_games)
+                        print('\n')
+                    case 'bs2':
+                        busca_sec_publicadora(' '.join(comando[1:]), indice_sec_publicadora, lista_inv, arq_games)
+                        print('\n')
+                    case 'i':
+                        print('inserção', ' '.join(comando[1:]))
+                        print('\n')
+                    case 'r':
+                        print('remoção', ' '.join(comando[1:]))
+                        print('\n')
+        
 
 def modo_c(): # Modo de compactação do arquivo
     pass  # TODO

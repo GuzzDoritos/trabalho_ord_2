@@ -101,7 +101,7 @@ def main():
     '''Esse programa lê os dados gravados no arquivo criado pelo programa
     escreve_registros
     Os registros devem ser lidos do arquivo um a um e apresentados em tela'''
-    NOME_ARQ = 'games.dat'
+    NOME_ARQ = arquivo
     ENTRADA = open(NOME_ARQ, 'rb')# n preciso do encoding pq é binário, e o encoding é para arquivos de texto, e aqui eu vou ler bytes, entao n preciso do encoding
 
     if argv[1] == '-b':
@@ -119,7 +119,11 @@ def main():
 
     elif argv[1] == '-e':
         print("Modo de leitura de arquivo de operações")
+        lista_inv = []
 
+        registros = lista_de_registros(ENTRADA)
+        indicepri = construir_indice_pri(registros)
+        indicesec = construir_indice_sec(registros, lista_inv)
 
         busca_pri("348", indicepri, ENTRADA)
         busca_sec_genero("Action", indicesec[0], lista_inv, ENTRADA)

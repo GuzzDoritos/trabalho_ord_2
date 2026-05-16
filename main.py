@@ -99,7 +99,7 @@ def modo_e(arquivo_operacoes):
                         num_bytes = len(comando[1].encode("utf-8"))
 
                         print(f'[thistle1]Inserção do registro de chave "[/][cornsilk1]{chave}[/][thistle1]"[/] [grey82]({num_bytes} bytes)[/]')
-                        retorno = insercao(comando[1], indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games)
+                        retorno = insercao(comando[1], indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games, num_bytes)
 
                         if not retorno:
                             print("[red]Elemento de mesma chave já existe.[/]")

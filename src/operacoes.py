@@ -74,16 +74,15 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, 
 
 #================INSERCAO =================
 
-def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
+def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games, num_bytes):
     chave = int(registro.split("|")[0])
     registro_ja_existe = busca_pri(chave, indice_pri, arq_games)
     if (registro_ja_existe):
         return False
-    tam_reg = len(registro)
     arq_games.seek(0, 2)
     byte_offset = arq_games.tell()
 
-    arq_games.write(pack(FORMATO_TAM, tam_reg))
+    arq_games.write(pack(FORMATO_TAM, num_bytes))
     arq_games.write(registro.encode("utf-8"))
 
     indice_pri.append([chave, byte_offset])
@@ -92,7 +91,7 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
     genero = registro.split("|")[3]
     publicadora = registro.split("|")[4]
 
-    lista_inv.append([byte_offset, -1, -1])
+    lista_inv.append([chave, -1, -1])
 
     atualiza_lst_inv_index_sec(genero, indice_sec_genero, lista_inv, 1)
     atualiza_lst_inv_index_sec(publicadora, indice_sec_publicadora, lista_inv, 2)

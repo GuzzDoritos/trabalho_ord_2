@@ -1,4 +1,7 @@
 from src.registro import le_registro
+from struct import pack, unpack
+from src.constantes import FORMATO_TAM
+from src.indices import atualiza_lst_inv_index_sec
 
 #================== BUSCA ======================
 
@@ -18,21 +21,19 @@ def busca_binaria(chave, indice_pri): #código da valéria
     return -1
 
 def busca_pri(chave, indice_pri, arquivo): #DÚVIDA
-    print(f'Busca pelo registro de ID "{chave}"')
 
     offset = busca_binaria(chave, indice_pri)
 
     if offset == -1:
-        print("Registro não encontrado")
-        return
+        return ""
     
     arquivo.seek(offset) #move o seek para o byte_offset encontrado na binaria
     registro = le_registro(arquivo) #le o registro do byte_offset atual
 
     if registro.startswith('*'): #remocao logica
-        print("Registro não encontrado")
+        return ""
     else:
-        print(registro)
+        return registro
     
 def busca_sec_genero(chave, indice_sec_genero, lista_inv, arquivo):
     encontrados = []
@@ -50,9 +51,7 @@ def busca_sec_genero(chave, indice_sec_genero, lista_inv, arquivo):
 
             indice = lista_inv[indice][1] #pega o próximo indice/reg do mesmo gênero 
 
-    print(f'Busca por registros de gênero "{chave}" ({len(encontrados)} registros)')
-    for reg in encontrados:
-        print(reg)
+    return encontrados
 
 def busca_sec_publicadora(chave, indice_sec_publicadora, lista_inv, arquivo):
     encontrados = []
@@ -70,14 +69,37 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, lista_inv, arquivo):
 
             indice = lista_inv[indice][2]
 
-    print(f'Busca por registros de publicadora "{chave}" ({len(encontrados)} registros)')
-    for reg in encontrados:
-        print(reg)
+    return encontrados
 
 #================INSERCAO =================
 
-def insercao(chave, num_bytes):
-    print(f'Inserção do registro de chave "{chave}" ({num_bytes} bytes)')
+def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
+    chave = int(registro.split("|")[0])
+    registro_ja_existe = busca_pri(chave, indice_pri, arq_games)
+    if (registro_ja_existe):
+        return False
+    tam_reg = len(registro)
+    arq_games.seek(0, 2)
+    byte_offset = arq_games.tell()
+
+    arq_games.write(pack(FORMATO_TAM, tam_reg))
+    arq_games.write(registro.encode("utf-8"))
+
+    indice_pri.append([chave, byte_offset])
+    indice_pri.sort()
+
+    genero = registro.split("|")[3]
+    publicadora = registro.split("|")[4]
+
+    lista_inv.append([byte_offset, -1, -1])
+
+    atualiza_lst_inv_index_sec(genero, indice_sec_genero, lista_inv, 1)
+    atualiza_lst_inv_index_sec(publicadora, indice_sec_publicadora, lista_inv, 2)
+
+    return True
+    
+
+
 
 #================REMOCAO==================
 

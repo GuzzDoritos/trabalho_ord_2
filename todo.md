@@ -4,15 +4,15 @@
 - [ ] **Very important:** Salvar os 4 índices (primário, gênero, publicadora, lista invertida) de volta no disco usando as funções de `persistencia.py` no **final** da execução do `modo_e` (depois do loop do arquivo de operações).
 
 ## implementação da `insercao` (`src/operacoes.py`) - gu
-- [ ] Duplicidade: checar se o ID já existe no `indice_pri`. Se sim, imprimir: `ID duplicado! Registro descartado.`.
-- [ ] **Escrita no disco:** 
-  - [ ] Calcular o tamanho do registro (serialização: `ID|Nome|Ano|Gênero|Publicadora|Plataforma|`).
-  - [ ] Dar `seek` para o final do arquivo (`games.dat`) e gravar os 2 bytes de tamanho + a string do registro.
-- [ ] **Atualização em memória:**
-  - [ ] Atualizar o `indice_pri` e garantir que continue ordenado numericamente.
-  - [ ] Adicionar os ponteiros na `lista_inv`.
-  - [ ] Atualizar as chaves em `indice_sec_genero` e `indice_sec_publicadora` se forem gêneros/publicadoras novas.
-- [ ] **Saída:** Imprimir: `Inserção do registro de chave "<ID>" (<N> bytes)` (Onde N é o tamanho da string + 2 bytes).
+- [X] Duplicidade: checar se o ID já existe no `indice_pri`. Se sim, imprimir: `ID duplicado! Registro descartado.`.
+- [X] **Escrita no disco:** 
+  - [X] Calcular o tamanho do registro (serialização: `ID|Nome|Ano|Gênero|Publicadora|Plataforma|`).
+  - [X] Dar `seek` para o final do arquivo (`games.dat`) e gravar os 2 bytes de tamanho + a string do registro.
+- [X] **Atualização em memória:**
+  - [X] Atualizar o `indice_pri` e garantir que continue ordenado numericamente.
+  - [X] Adicionar os ponteiros na `lista_inv`.
+  - [X] Atualizar as chaves em `indice_sec_genero` e `indice_sec_publicadora` se forem gêneros/publicadoras novas.
+- [X] **Saída:** Imprimir: `Inserção do registro de chave "<ID>" (<N> bytes)` (Onde N é o tamanho da string + 2 bytes).
 
 ## 🗑️ Implementação da `remocao` (`src/operacoes.py`)
 - [ ] **Verificação de existência:** Checar se o ID existe via `indice_pri`. Se não existir, imprimir: `Remoção do registro de chave "<ID>"` e na linha seguinte `Registro não encontrado!`.

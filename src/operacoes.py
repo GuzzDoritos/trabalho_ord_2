@@ -104,5 +104,6 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
 
 #================REMOCAO==================
 
-def remocao(chave, offset):
-    print(f'Remoção do registro de chave "{chave}" (offset = {offset})')
+def remocao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
+    # print(f'Remoção do registro de chave "{chave}" (offset = {offset})')
+    pass

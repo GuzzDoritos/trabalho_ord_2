@@ -2,3 +2,4 @@ data/*.lst
 data/*.ind
 data/*.dat
 */__pycache__
+*/.vscode/*

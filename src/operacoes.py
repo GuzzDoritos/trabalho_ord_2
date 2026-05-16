@@ -61,7 +61,8 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, 
         indice = indice_sec_publicadora[chave]
 
         while indice != -1:
-            offset = lista_inv[indice][0]
+            chave_pri = lista_inv[indice][0] #pega o byte_offset do registro atual
+            offset = busca_binaria(chave_pri, indice_pri)
             arquivo.seek(offset)
             registro = le_registro(arquivo)
 

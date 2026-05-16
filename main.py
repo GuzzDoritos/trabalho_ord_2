@@ -85,10 +85,10 @@ def modo_e(arquivo_operacoes):
                     case 'bs1' | 'bs2':
                         chave = comando[1]
                         if comando[0] == 'bs1':
-                            encontrados = busca_sec_genero(chave, indice_sec_genero, lista_inv, arq_games)
+                            encontrados = busca_sec_genero(chave, indice_sec_genero, indice_pri, lista_inv, arq_games)
                             pesquisa = 'gênero'
                         elif comando[0] == 'bs2':
-                            encontrados = busca_sec_publicadora(chave, indice_sec_publicadora, lista_inv, arq_games)
+                            encontrados = busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, arq_games)
                             pesquisa = 'publicadora'
                         print(f'[thistle1]Busca por registros de {pesquisa} "[/][cornsilk1]{chave}[/][thistle1]"[/] [grey82]({len(encontrados)} registros)[/]')
                         for reg in encontrados:

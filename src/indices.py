@@ -15,7 +15,7 @@ def construir_indice_sec(registros, lista_inv):
     for i in range(len(registros)):
         genero = registros[i][4]
         publicadora = registros[i][5]
-        lista_inv.append([registros[i][0], -1, -1])  # registros[i][0] é o byte_offset 
+        lista_inv.append([registros[i][1], -1, -1])  # registros[i][0] é o byte_offset 
         
         atualiza_lst_inv_index_sec(genero, indice_sec_genero, lista_inv, 1)
         atualiza_lst_inv_index_sec(publicadora, index_sec_publicadora, lista_inv, 2)

@@ -107,9 +107,22 @@ def modo_e(arquivo_operacoes):
                             print("[light_green]Inserido com sucesso.[/]")
                         print('\n')
                     case 'r':
-                        # print('remoção', ' '.join(comando[1:]))
-                        # print('\n')
-                        pass
+                        registro_lista = comando[1].split("|")
+                        chave = int(registro_lista[0])
+                        genero = registro_lista[3]
+                        publicadora = registro_lista[4]
+                        offset = busca_binaria(chave, indice_pri)
+                        if offset > -1:
+                            print(f'[thistle1]Remoção do registro de chave "[/][cornsilk1]{chave}[/][thistle1]"[/] [grey82](offset = {offset})[/]\n')
+                            remocao(chave, genero, publicadora, offset, indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games)
+                        else:
+                            print(f'[thistle1]Remoção do registro de chave "[/][cornsilk1]{chave}[/][thistle1]"[/]')
+                            print('[red]Elemento de mesma chave já existe.[/]\n')
+
+
+
+
+                        # retorno = 
                 arq_indice_prim(indice_pri)
                 arq_indice_genero(indice_sec_genero)
                 arq_indice_publicadora(indice_sec_publicadora)

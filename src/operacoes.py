@@ -104,6 +104,25 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
 
 #================REMOCAO==================
 
-def remocao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
-    # print(f'Remoção do registro de chave "{chave}" (offset = {offset})')
-    pass
+def remocao(chave: int, genero: str, publicadora: str, offset: int, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
+    arq_games.seek(offset + 2)
+    arq_games.write("*".encode("utf-8"))
+
+    indice_pri.remove([chave, offset])
+    
+    compacta_lista_inv(genero, indice_sec_genero, lista_inv, 1)
+    
+    compacta_lista_inv(publicadora, indice_sec_publicadora, lista_inv, 2)
+
+
+def compacta_lista_inv(chave, index_sec, lst_inv, lst_inv_coluna):
+    reg_anterior = None
+    reg = lst_inv[index_sec[chave]]
+    while reg[0] != chave:
+        reg_anterior = reg
+        reg = lst_inv[reg[lst_inv_coluna]]
+
+    if reg_anterior is None:
+        index_sec[chave] = reg[lst_inv_coluna]
+    else:
+        reg_anterior[lst_inv_coluna] = reg[lst_inv_coluna]

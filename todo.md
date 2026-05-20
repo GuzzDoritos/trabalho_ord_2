@@ -51,7 +51,7 @@ Saída esperada pela spec (exemplo do enunciado):
   Registro não encontrado!
 
 
-2. COMPACTAÇÃO — src/compactacao.py incompleta
+FEITO - 2. COMPACTAÇÃO — src/compactacao.py incompleta
 ----------------------------------------------------------------
 A leitura dos registros válidos está feita, mas faltam 2 coisas:
 
@@ -91,7 +91,7 @@ Esqueleto do que falta na compactacao():
 🟡 BUGS DE LÓGICA (podem travar na apresentação)
 ================================================================
 
-3. SALVAMENTO DOS ÍNDICES NO LUGAR ERRADO — main.py
+FEITO - 3. SALVAMENTO DOS ÍNDICES NO LUGAR ERRADO — main.py
 ----------------------------------------------------------------
 O salvamento dos 4 índices está DENTRO do loop de operações
 (linhas 132–135 do main.py), o que faz salvar no disco após
@@ -140,7 +140,7 @@ se deve ou não somar os 2 bytes do cabeçalho.
 🟢 DETALHES DE SAÍDA (pequenos, mas visíveis na apresentação)
 ================================================================
 
-6. MENSAGEM DE ID DUPLICADO DIFERENTE DA SPEC
+FEITO - 6. MENSAGEM DE ID DUPLICADO DIFERENTE DA SPEC
 ----------------------------------------------------------------
 O que o código imprime:
   "Elemento de mesma chave já existe."
@@ -152,7 +152,7 @@ Recomendação: alinhar a mensagem com o que foi discutido
 com a professora ou com o que está no enunciado.
 
 
-7. BUSCA SECUNDÁRIA — ORDEM DOS RESULTADOS
+FEITO - 7. BUSCA SECUNDÁRIA — ORDEM DOS RESULTADOS
 ----------------------------------------------------------------
 A ordem dos registros retornados pela busca secundária depende
 da ordem de inserção na lista invertida. Confira se a ordem
@@ -168,13 +168,11 @@ PRIORIDADE | O QUE FALTA
 -----------|------------------------------------------------------
 🔴 ALTA    | Implementar remocao() completamente
 🔴 ALTA    | Chamar remocao() no case 'r' do main.py
-🔴 ALTA    | Compactação: substituir games.dat e reconstruir
-           | primario.ind com os novos offsets
+🔴 ALTA    | Compactação: substituir games.dat e reconstruir primario.ind com os novos offsets
 🟡 MÉDIA   | Mover salvamento dos índices para fora do loop
 🟡 MÉDIA   | Corrigir seek na remoção lógica (offset + 2)
 🟡 MÉDIA   | Verificar contagem de bytes na inserção
-🟠 BAIXA   | Verificar existência do primario.ind antes de
-           | reconstruir na compactação
+🟠 BAIXA   | Verificar existência do primario.ind antes de reconstruir na compactação
 🟢 BAIXA   | Ajustar mensagem de ID duplicado
 
 ================================================================

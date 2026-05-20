@@ -102,7 +102,7 @@ def modo_e(arquivo_operacoes):
                         retorno = insercao(comando[1], indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games, num_bytes)
 
                         if not retorno:
-                            print("[red]Elemento de mesma chave já existe.[/]")
+                            print("[red]ID duplicado! Registro descartado.[/]")
                         else:
                             print("[light_green]Inserido com sucesso.[/]")
                         print('\n')
@@ -110,10 +110,12 @@ def modo_e(arquivo_operacoes):
                         # print('remoção', ' '.join(comando[1:]))
                         # print('\n')
                         pass
-                arq_indice_prim(indice_pri)
-                arq_indice_genero(indice_sec_genero)
-                arq_indice_publicadora(indice_sec_publicadora)
-                arq_indice_listainv(lista_inv)
+
+    #arquivos de índice serão atualizados no dispositivo de armazenamento sempre que uma execução for encerrada, depois
+    arq_indice_prim(indice_pri)
+    arq_indice_genero(indice_sec_genero)
+    arq_indice_publicadora(indice_sec_publicadora)
+    arq_indice_listainv(lista_inv)
 
 
 def modo_c(): # Modo de compactação do arquivo

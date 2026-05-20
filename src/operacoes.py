@@ -52,6 +52,7 @@ def busca_sec_genero(chave, indice_sec_genero, indice_pri, lista_inv, arquivo):
 
             indice = lista_inv[indice][1] #pega o próximo indice/reg do mesmo gênero 
 
+    encontrados.sort()
     return encontrados
 
 def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, arquivo):
@@ -70,7 +71,8 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, 
                 encontrados.append(registro)
 
             indice = lista_inv[indice][2]
-
+    
+    encontrados.sort()
     return encontrados
 
 #================INSERCAO =================
@@ -98,9 +100,6 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
     atualiza_lst_inv_index_sec(publicadora, indice_sec_publicadora, lista_inv, 2)
 
     return True
-    
-
-
 
 #================REMOCAO==================
 

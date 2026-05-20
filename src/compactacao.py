@@ -1,6 +1,8 @@
 from src.registro import le_registro
-from src.constantes import *
+from src.constantes import FORMATO_TAM
 from struct import pack, unpack, calcsize
+from src.persistencia import arq_indice_prim
+import os
 
 def compactacao():
     reg_validos = []
@@ -10,18 +12,22 @@ def compactacao():
             if not BUFFER[0] == '*':
                 reg_validos.append(BUFFER)
             BUFFER = le_registro(arquivo)
+
+    novo_indice_pri = []
                 
     with open("data/games_novo.dat", "wb") as arq:
-        for i in reg_validos:
-            buffer_bytes = i.encode('utf-8')
+        for reg in reg_validos:
+            novo_byte_offset = arq.tell() #antes de ler
+            buffer_bytes = reg.encode('utf-8')
             arq.write(pack(FORMATO_TAM, len(buffer_bytes)))
             arq.write(buffer_bytes)
 
-'''
-## 🗜️ Modo `-c`: Compactação (`src/compactacao.py` e `main.py`) - isa (quinta)
-- [x] Chamar a função de compactação na função `modo_c` do `main.py`.
-- [x] **Lógica da compactação:**
-- [x] Ler o `games.dat` inteiro, pulando os registros que começam com `*`.
-- [x] Reescrever o `games.dat` apenas com os registros válidos (removendo os "buracos").
-- [ ] Reconstruir a estrutura do `primario.ind` (pegando os novos byte-offsets gerados pela reescrita) e salvar o novo índice no disco.
-'''
+            #lógica parecida com construir_indice_pri no arquivo indices.py -> vamos atualizar o indice primário (pq removeu logicamente alguns arquivos)
+            #id (chave) + referencia (byteoffset)
+            id_reg = int(reg.split('|')[0]) #primeiro 
+            novo_indice_pri.append([id_reg, novo_byte_offset])
+
+    novo_indice_pri.sort()
+    arq_indice_prim(novo_indice_pri)
+    
+    

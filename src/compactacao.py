@@ -19,7 +19,7 @@ def compactacao():
     with open("data/games.dat", "rb") as arq:
         registros = lista_de_registros(arq)
         for reg in registros:
-            if not reg.startswith('*'):  # Se não for deletado logicamente
+            if not reg[2].startswith('*'):  # Se não for deletado logicamente
                 reg_validos.append(reg)
     
     # Cria novo arquivo com registros válidos E recalcula offsets
@@ -28,11 +28,11 @@ def compactacao():
     with open("data/games_novo.dat", "wb") as arq_novo:
         for reg in reg_validos:
             novo_byte_offset = arq_novo.tell() # Captura o byteoffset antes de escrever o reg
-            buffer_bytes = reg.encode('utf-8')
+            buffer_bytes = (str(reg[1]) + reg[2]).encode('utf-8')
             arq_novo.write(pack(FORMATO_TAM, len(buffer_bytes)))
             arq_novo.write(buffer_bytes)
             
-            id_reg = int(reg.split('|')[0])
+            id_reg = reg[1]
             novo_indice_pri.append([id_reg, novo_byte_offset])
     
     

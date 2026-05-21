@@ -107,17 +107,14 @@ def modo_e(arquivo_operacoes):
                             print("[light_green]Inserido com sucesso.[/]")
                         print('\n')
                     case 'r':
-                        registro_lista = comando[1].split("|")
-                        chave = int(registro_lista[0])
-                        genero = registro_lista[3]
-                        publicadora = registro_lista[4]
+                        chave = int(comando[1])
                         offset = busca_binaria(chave, indice_pri)
                         if offset > -1:
                             print(f'[thistle1]Remoção do registro de chave "[/][cornsilk1]{chave}[/][thistle1]"[/] [grey82](offset = {offset})[/]\n')
-                            remocao(chave, genero, publicadora, offset, indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games)
+                            remocao(chave, offset, indice_pri, indice_sec_genero, indice_sec_publicadora, lista_inv, arq_games)
                         else:
                             print(f'[thistle1]Remoção do registro de chave "[/][cornsilk1]{chave}[/][thistle1]"[/]')
-                            print('[red]Elemento de mesma chave já existe.[/]\n')
+                            print('[red]Elemento não existe.[/]\n')
 
     #arquivos de índice serão atualizados no dispositivo de armazenamento sempre que uma execução for encerrada, depois
     arq_indice_prim(indice_pri)

@@ -31,6 +31,7 @@ def modo_b(): # Construção de índices
     with open(ARQUIVO, 'rb') as entrada:
         registros = lista_de_registros(entrada)
     
+    #constroi os 3 índices + lista invertida, e salva cada um no arquivo correspondente usando as funções de persistencia.py
     lista_inv = []
     indice_pri = construir_indice_pri(registros)
     indice_sec = construir_indice_sec(registros, lista_inv)
@@ -42,7 +43,7 @@ def modo_b(): # Construção de índices
 
 def modo_e(arquivo_operacoes):
     # Trata o caso do argumento chegar vazia ou nula
-    if not arquivo_operacoes:
+    if not arquivo_operacoes: 
         print("Erro: Arquivo de operações não informado. Encerrando.")
         return
     
@@ -69,10 +70,10 @@ def modo_e(arquivo_operacoes):
     # abrir o games.dat e o arquivo de operações
     with open("data/games.dat", "rb+") as arq_games:
         with open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
-            buffer = arq_ops.readline().strip()
+            buffer = arq_ops.readline().strip() #lê a primeira linha do arquivo de operações, e remove os espaços em branco no início e no final da linha, e armazena na variável buffer
             while buffer:
-                comando = buffer.split(None, 1)
-                buffer = arq_ops.readline().strip()
+                comando = buffer.split(None, 1) #divide a string buffer em uma lista de duas partes, usando o primeiro espaço em branco como separador, onde a primeira parte é o comando (comando[0]) e a segunda parte é o argumento do comando (comando[1]), e armazena em comando
+                buffer = arq_ops.readline().strip() 
                 match comando[0]:
                     case 'bp':
                         print(f'[thistle1]Busca pelo registro de ID[/] [thistle1]"[cornsilk1]{int(comando[1])}[/][thistle1]"[/][/]')
@@ -125,9 +126,6 @@ def modo_e(arquivo_operacoes):
 
 def modo_c(): # Modo de compactação do arquivo
     compactacao()
-    
-
-    
 
 def main():
     if argv[1] == '-b':

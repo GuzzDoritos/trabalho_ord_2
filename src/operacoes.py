@@ -5,8 +5,8 @@ from src.indices import atualiza_lst_inv_index_sec
 
 #================== BUSCA ======================
 
-def busca_binaria(chave, indice_pri): #código da valéria
-    esq, dir = 0, len(indice_pri) - 1
+def busca_binaria(chave, indice_pri): #código dos slides, alterado algumas coisas
+    esq, dir = 0, len(indice_pri) - 1 #bb na lista indice_pri (ordenada por id)
     chave = int(chave)
     
     while esq <= dir:
@@ -18,22 +18,22 @@ def busca_binaria(chave, indice_pri): #código da valéria
             esq = meio + 1
         else:
             dir = meio - 1
-    return -1
+    return -1 #retorna o byte_offset do registro se encontrar, ou -1 se não encontrar
 
 def busca_pri(chave, indice_pri, arquivo): #DÚVIDA
 
-    offset = busca_binaria(chave, indice_pri)
+    offset = busca_binaria(chave, indice_pri) #busca o byte_offset do registro no arquivo de dados usando a busca binária 
 
     if offset == -1:
-        return ""
+        return "" #se o byte_offset for -1 (bb não encontrar o ID do jogo no índice primário,)
     
     arquivo.seek(offset) #move o seek para o byte_offset encontrado na binaria
     registro = le_registro(arquivo) #le o registro do byte_offset atual
 
-    if registro.startswith('*'): #remocao logica
+    if registro.startswith('*'): #verifica se começa com * (removido logicamente)
         return ""
     else:
-        return registro
+        return registro #retorna string do reg encontrado 
     
 def busca_sec_genero(chave, indice_sec_genero, indice_pri, lista_inv, arquivo):
     encontrados = []
@@ -42,20 +42,20 @@ def busca_sec_genero(chave, indice_sec_genero, indice_pri, lista_inv, arquivo):
         indice = indice_sec_genero[chave]
 
         while indice != -1: #enquanto tiver um indice válido, aponta para nada (-1)
-            chave_pri = lista_inv[indice][0] #pega o byte_offset do registro atual
-            offset = busca_binaria(chave_pri, indice_pri)
-            arquivo.seek(offset)
-            registro = le_registro(arquivo) 
+            chave_pri = lista_inv[indice][0] 
+            offset = busca_binaria(chave_pri, indice_pri)#pega o byte_offset do registro atual
+            arquivo.seek(offset) #move o seek para o byte_offset encontrado na binaria
+            registro = le_registro(arquivo) #le o registro do byte_offset atual
 
             if not registro.startswith('*'): #se o registro n tiver sido removido logico, add ele na lista de encontrados
                 encontrados.append(registro)
 
             indice = lista_inv[indice][1] #pega o próximo indice/reg do mesmo gênero 
 
-    encontrados.sort()
+    encontrados.sort() #ordena a lista de encontrados em ordem alfabética
     return encontrados
 
-def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, arquivo):
+def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, arquivo): #msm lógica do busca_sec_genero, mudando o [2]
     encontrados = []
 
     if chave  in indice_sec_publicadora:
@@ -79,16 +79,16 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, 
 
 def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games, num_bytes):
     chave = int(registro.split("|")[0])
-    registro_ja_existe = busca_pri(chave, indice_pri, arq_games)
+    registro_ja_existe = busca_pri(chave, indice_pri, arq_games) 
     if (registro_ja_existe):
         return False
-    arq_games.seek(0, 2)
-    byte_offset = arq_games.tell()
+    arq_games.seek(0, 2) #move o seek para o final do arquivo de dados, para escrever o novo registro no final do arquivo
+    byte_offset = arq_games.tell() #pega o byte_offset do final do arquivo, onde o novo registro vai ser escrito
 
-    arq_games.write(pack(FORMATO_TAM, num_bytes))
-    arq_games.write(registro.encode("utf-8"))
+    arq_games.write(pack(FORMATO_TAM, num_bytes)) #escreve o tamanho do registro em bytes (num_bytes) no arquivo de dados, usando o formato definido por FORMATO_TAM, e move o seek para o próximo campo do registro
+    arq_games.write(registro.encode("utf-8")) #escreve o registro como bytes no arquivo de dados, usando a codificação utf-8, e move o seek para o próximo registro
 
-    indice_pri.append([chave, byte_offset])
+    indice_pri.append([chave, byte_offset]) 
     indice_pri.sort()
 
     genero = registro.split("|")[3]
@@ -104,11 +104,11 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
 #================REMOCAO==================
 
 def remocao(chave: int, offset: int, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
-    arq_games.seek(offset)
-    tam = int.from_bytes(arq_games.read(2), 'little')
-    arq_games.write(b"*")
+    arq_games.seek(offset) #move o seek para o byte_offset do registro a ser removido, para ler o registro e marcar ele como removido logicamente (* no início do registro)
+    tam = int.from_bytes(arq_games.read(2), 'little') #lê os 2 bytes do tamanho do registro e move o seek para o próximo campo do registro, e armazena o tamanho do registro em tam
+    arq_games.write(b"*") #escreve o byte b"*" no início do registro para marcar ele como removido logicamente, e move o seek para o próximo campo do registro
     registro = arq_games.read(tam - 1).decode("utf-8").split("|")
-    indice_pri.remove([chave, offset])
+    indice_pri.remove([chave, offset]) #remove a entrada do índice primário que tem o ID do jogo e o byte_offset do registro removido
 
     genero = registro[3]
     publicadora = registro[4]

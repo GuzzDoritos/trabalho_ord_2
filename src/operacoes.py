@@ -113,19 +113,19 @@ def remocao(chave: int, offset: int, indice_pri: list[list], indice_sec_genero, 
     genero = registro[3]
     publicadora = registro[4]
     
-    compacta_lista_inv(genero, indice_sec_genero, lista_inv, 1)
+    compacta_lista_inv(genero, chave, indice_sec_genero, lista_inv, 1)
     
-    compacta_lista_inv(publicadora, indice_sec_publicadora, lista_inv, 2)
+    compacta_lista_inv(publicadora, chave, indice_sec_publicadora, lista_inv, 2)
 
 
-def compacta_lista_inv(chave, index_sec, lst_inv, lst_inv_coluna):
+def compacta_lista_inv(chave_sec, chave_pri, index_sec, lst_inv, lst_inv_coluna):
     reg_anterior = None
-    reg = lst_inv[index_sec[chave]]
-    while reg[0] != chave and reg[lst_inv_coluna] != -1:
+    reg = lst_inv[index_sec[chave_sec]]
+    while reg[0] != chave_pri and reg[lst_inv_coluna] != -1:
         reg_anterior = reg
         reg = lst_inv[reg[lst_inv_coluna]]
 
     if reg_anterior is None:
-        index_sec[chave] = reg[lst_inv_coluna]
+        index_sec[chave_sec] = reg[lst_inv_coluna]
     else:
         reg_anterior[lst_inv_coluna] = reg[lst_inv_coluna]

@@ -1,4 +1,7 @@
 from src.registro import le_registro
+from struct import pack, unpack
+from src.constantes import FORMATO_TAM
+from src.indices import atualiza_lst_inv_index_sec
 
 #================== BUSCA ======================
 
@@ -18,30 +21,29 @@ def busca_binaria(chave, indice_pri): #código da valéria
     return -1
 
 def busca_pri(chave, indice_pri, arquivo): #DÚVIDA
-    print(f'Busca pelo registro de ID "{chave}"')
 
     offset = busca_binaria(chave, indice_pri)
 
     if offset == -1:
-        print("Registro não encontrado")
-        return
+        return ""
     
     arquivo.seek(offset) #move o seek para o byte_offset encontrado na binaria
     registro = le_registro(arquivo) #le o registro do byte_offset atual
 
     if registro.startswith('*'): #remocao logica
-        print("Registro não encontrado")
+        return ""
     else:
-        print(registro)
+        return registro
     
-def busca_sec_genero(chave, indice_sec_genero, lista_inv, arquivo):
+def busca_sec_genero(chave, indice_sec_genero, indice_pri, lista_inv, arquivo):
     encontrados = []
     
     if chave in indice_sec_genero: # só faz a busca se a chave existir
         indice = indice_sec_genero[chave]
 
         while indice != -1: #enquanto tiver um indice válido, aponta para nada (-1)
-            offset = lista_inv[indice][0] #pega o byte_offset do registro atual
+            chave_pri = lista_inv[indice][0] #pega o byte_offset do registro atual
+            offset = busca_binaria(chave_pri, indice_pri)
             arquivo.seek(offset)
             registro = le_registro(arquivo) 
 
@@ -50,18 +52,18 @@ def busca_sec_genero(chave, indice_sec_genero, lista_inv, arquivo):
 
             indice = lista_inv[indice][1] #pega o próximo indice/reg do mesmo gênero 
 
-    print(f'Busca por registros de gênero "{chave}" ({len(encontrados)} registros)')
-    for reg in encontrados:
-        print(reg)
+    encontrados.sort()
+    return encontrados
 
-def busca_sec_publicadora(chave, indice_sec_publicadora, lista_inv, arquivo):
+def busca_sec_publicadora(chave, indice_sec_publicadora, indice_pri, lista_inv, arquivo):
     encontrados = []
 
     if chave  in indice_sec_publicadora:
         indice = indice_sec_publicadora[chave]
 
         while indice != -1:
-            offset = lista_inv[indice][0]
+            chave_pri = lista_inv[indice][0] #pega o byte_offset do registro atual
+            offset = busca_binaria(chave_pri, indice_pri)
             arquivo.seek(offset)
             registro = le_registro(arquivo)
 
@@ -69,17 +71,61 @@ def busca_sec_publicadora(chave, indice_sec_publicadora, lista_inv, arquivo):
                 encontrados.append(registro)
 
             indice = lista_inv[indice][2]
-
-    print(f'Busca por registros de publicadora "{chave}" ({len(encontrados)} registros)')
-    for reg in encontrados:
-        print(reg)
+    
+    encontrados.sort()
+    return encontrados
 
 #================INSERCAO =================
 
-def insercao(chave, num_bytes):
-    print(f'Inserção do registro de chave "{chave}" ({num_bytes} bytes)')
+def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games, num_bytes):
+    chave = int(registro.split("|")[0])
+    registro_ja_existe = busca_pri(chave, indice_pri, arq_games)
+    if (registro_ja_existe):
+        return False
+    arq_games.seek(0, 2)
+    byte_offset = arq_games.tell()
+
+    arq_games.write(pack(FORMATO_TAM, num_bytes))
+    arq_games.write(registro.encode("utf-8"))
+
+    indice_pri.append([chave, byte_offset])
+    indice_pri.sort()
+
+    genero = registro.split("|")[3]
+    publicadora = registro.split("|")[4]
+
+    lista_inv.append([chave, -1, -1])
+
+    atualiza_lst_inv_index_sec(genero, indice_sec_genero, lista_inv, 1)
+    atualiza_lst_inv_index_sec(publicadora, indice_sec_publicadora, lista_inv, 2)
+
+    return True
 
 #================REMOCAO==================
 
-def remocao(chave, offset):
-    print(f'Remoção do registro de chave "{chave}" (offset = {offset})')
+def remocao(chave: int, offset: int, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
+    arq_games.seek(offset)
+    tam = int.from_bytes(arq_games.read(2), 'little')
+    arq_games.write(b"*")
+    registro = arq_games.read(tam - 1).decode("utf-8").split("|")
+    indice_pri.remove([chave, offset])
+
+    genero = registro[3]
+    publicadora = registro[4]
+    
+    compacta_lista_inv(genero, chave, indice_sec_genero, lista_inv, 1)
+    
+    compacta_lista_inv(publicadora, chave, indice_sec_publicadora, lista_inv, 2)
+
+
+def compacta_lista_inv(chave_sec, chave_pri, index_sec, lst_inv, lst_inv_coluna):
+    reg_anterior = None
+    reg = lst_inv[index_sec[chave_sec]]
+    while reg[0] != chave_pri and reg[lst_inv_coluna] != -1:
+        reg_anterior = reg
+        reg = lst_inv[reg[lst_inv_coluna]]
+
+    if reg_anterior is None:
+        index_sec[chave_sec] = reg[lst_inv_coluna]
+    else:
+        reg_anterior[lst_inv_coluna] = reg[lst_inv_coluna]

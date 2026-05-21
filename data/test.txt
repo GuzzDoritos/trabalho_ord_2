@@ -1,0 +1,13 @@
+r 9999
+bp 9999
+i 539|Minecraft|2011|Sandbox|Microsoft Studios|PC|
+bp 539
+r 686
+bs1 Action RPG
+r 100
+bs1 Hack and Slash
+i 9|TestGame|2000|Puzzle|Valve|PC|
+bp 9
+r 9
+r 397
+r 397

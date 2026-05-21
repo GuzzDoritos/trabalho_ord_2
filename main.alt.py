@@ -12,10 +12,11 @@ from src.compactacao import compactacao
 
 ARQUIVO = "data/games.dat"
 
-def modo_b():
+def modo_b(): # Construção de índices
     with open(ARQUIVO, 'rb') as entrada:
         registros = lista_de_registros(entrada)
     
+    #constroi os 3 índices + lista invertida, e salva cada um no arquivo correspondente usando as funções de persistencia.py
     lista_inv = []
     indice_pri = construir_indice_pri(registros)
     indice_sec = construir_indice_sec(registros, lista_inv)
@@ -26,7 +27,8 @@ def modo_b():
     arq_indice_listainv(lista_inv)
 
 def modo_e(arquivo_operacoes):
-    if not arquivo_operacoes:
+    # Trata o caso do argumento chegar vazia ou nula
+    if not arquivo_operacoes: 
         print("Erro: Arquivo de operações não informado. Encerrando.")
         return
     
@@ -44,17 +46,19 @@ def modo_e(arquivo_operacoes):
             print(f"Erro: Arquivo necessário não encontrado ({caminho}). Encerrando.")
             return
             
+    # carregar índices passando 'None' (como programado no persistencia.py)
     indice_pri = arq_indice_prim(None)
     indice_sec_genero = arq_indice_genero(None)
     indice_sec_publicadora = arq_indice_publicadora(None)
     lista_inv = arq_indice_listainv(None)
     
+    # abrir o games.dat e o arquivo de operações
     with open("data/games.dat", "rb+") as arq_games:
         with open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
-            buffer = arq_ops.readline().strip()
+            buffer = arq_ops.readline().strip() #lê a primeira linha do arquivo de operações, e remove os espaços em branco no início e no final da linha, e armazena na variável buffer
             while buffer:
-                comando = buffer.split(None, 1)
-                buffer = arq_ops.readline().strip()
+                comando = buffer.split(None, 1) #divide a string buffer em uma lista de duas partes, usando o primeiro espaço em branco como separador, onde a primeira parte é o comando (comando[0]) e a segunda parte é o argumento do comando (comando[1]), e armazena em comando
+                buffer = arq_ops.readline().strip() 
                 match comando[0]:
                     case 'bp':
                         print(f'Busca pelo registro de ID "{int(comando[1])}"')
@@ -96,15 +100,15 @@ def modo_e(arquivo_operacoes):
                             print(f'Remoção do registro de chave "{chave}"')
                             print('Elemento não existe.\n')
 
+    #arquivos de índice serão atualizados no dispositivo de armazenamento sempre que uma execução for encerrada, depois
     arq_indice_prim(indice_pri)
     arq_indice_genero(indice_sec_genero)
     arq_indice_publicadora(indice_sec_publicadora)
     arq_indice_listainv(lista_inv)
 
 
-def modo_c():
+def modo_c(): # Modo de compactação do arquivo
     compactacao()
-
 
 def main():
     if argv[1] == '-b':

@@ -105,8 +105,8 @@ def insercao(registro: str, indice_pri: list[list], indice_sec_genero, indice_se
 
 def remocao(chave: int, offset: int, indice_pri: list[list], indice_sec_genero, indice_sec_publicadora, lista_inv: list, arq_games):
     arq_games.seek(offset)
-    tam = int.from_bytes(arq_games.read(2))
-    arq_games.write("*".encode("utf-8"))
+    tam = int.from_bytes(arq_games.read(2), 'little')
+    arq_games.write(b"*")
     registro = arq_games.read(tam - 1).decode("utf-8").split("|")
     indice_pri.remove([chave, offset])
 

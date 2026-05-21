@@ -28,7 +28,7 @@ def compactacao():
     with open("data/games.dat", "wb") as arq_novo:
         for reg in reg_validos:
             novo_byte_offset = arq_novo.tell() # Captura o byteoffset antes de escrever o reg
-            buffer_bytes = (str(reg[1]) + "|" + "|".join(reg[2:])).encode('utf-8')
+            buffer_bytes = (f"{str(reg[1])}|{'|'.join(reg[2:])}|").encode('utf-8')
             arq_novo.write(pack(FORMATO_TAM, len(buffer_bytes)))
             arq_novo.write(buffer_bytes)
             

@@ -1,7 +1,6 @@
 from sys import argv, os
 from src.arvoreb import *
-
-ARQUIVO_DADOS = "data/games.dat"
+from src.constantes import *
 
 def modo_e(arquivo_operacoes):
     # Trata o caso do argumento chegar vazia ou nula
@@ -20,7 +19,7 @@ def modo_e(arquivo_operacoes):
             print(f"Erro: Arquivo necessário não encontrado ({caminho}). Encerrando.")
             return            
     
-    with open(ARQUIVO_DADOS, "rb+") as arq_games:
+    with open(ARQ_GAMES, "rb+") as arq_games:
         with open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
             buffer = arq_ops.readline().strip()
             while buffer:
@@ -35,7 +34,7 @@ def modo_e(arquivo_operacoes):
 def main():
     if argv[1] == '-b':
         try:
-            with open(ARQUIVO_DADOS, "rb", encoding='utf-8') as arq:
+            with open(ARQ_GAMES, "rb", encoding='utf-8') as arq:
                 cria_arvore(arq)
         except FileNotFoundError:
             print("Erro: O arquivo games.dat não pôde ser encontrado na pasta \"/data/\".")

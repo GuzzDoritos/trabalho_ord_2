@@ -2,6 +2,9 @@ from sys import argv, os
 from src.arvoreb import *
 from src.constantes import *
 
+def modo_b():
+    criaIndice() #teste
+
 def modo_e(arquivo_operacoes):
     # Trata o caso do argumento chegar vazia ou nula
     if not arquivo_operacoes: 
@@ -30,19 +33,22 @@ def modo_e(arquivo_operacoes):
                         pass
                     case 'i':
                         pass
+    
+def modo_p():
+    imprimirArvoreB(ARQ_BTREE)
 
 def main():
     if argv[1] == '-b':
         try:
             with open(ARQ_GAMES, "rb", encoding='utf-8') as arq:
-                cria_arvore(arq)
+                criaArvore(arq)
         except FileNotFoundError:
             print("Erro: O arquivo games.dat não pôde ser encontrado na pasta \"/data/\".")
 
     elif argv[1] == '-e':
         modo_e(argv[2])
     elif argv[1] == '-p':
-        imprimir_arvoreb()
+        imprimirArvoreB(ARQ_BTREE)
 
 if __name__ == "__main__":
     main()

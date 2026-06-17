@@ -5,7 +5,30 @@ from struct import *
 import os
 
 def criaArvore(arq: BinaryIO): #gu
+    with open('btree.dat', 'wb') as btree:
+        rrn_raiz = 0
+        while True:
+            dados = leiaReg(arq)
+            if dados is None:
+                break
+
+            chave_reg, chave = dados
+
+
 def leiaReg(arq: BinaryIO): #gu
+    offset = arq.tell()
+    
+    tam_bytes = arq.read(2)
+    if not tam_bytes:
+        return None
+    
+    tam = int.from_bytes(tam_bytes, "little")
+    registro = arq.read(tam).decode("utf-8")
+    
+    registro = registro.split('|', 1)
+    chave = int(registro[0])
+
+    return chave, offset
 
 #================PÁGINA================
 

@@ -1,13 +1,11 @@
 from src.constantes import *
+from typing import BinaryIO
 from src.pagina import *
 from struct import *
 import os
 
-def criaArvore(arq): #gu
-    pass 
-
-def leiaReg(arq): #gu
-    pass 
+def criaArvore(arq: BinaryIO): #gu
+def leiaReg(arq: BinaryIO): #gu
 
 #================PÁGINA================
 

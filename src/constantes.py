@@ -1,6 +1,6 @@
 from struct import calcsize
 
-ORDEM = 5
+ORDEM = 15
 
 NULO = -1
 FORMATO_PAGE = f'i{ORDEM - 1}i{ORDEM - 1}i{ORDEM}i' #numChaves, chaves, offsets, filhos #'i4i4i5i'

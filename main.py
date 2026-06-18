@@ -4,7 +4,7 @@ from src.arvoreb import *
 from src.constantes import *
 
 def modo_b():
-    criaIndice() #teste
+    criaIndice() 
 
 def modo_e(arquivo_operacoes):
     # Trata o caso do argumento chegar vazia ou nula
@@ -34,13 +34,13 @@ def modo_e(arquivo_operacoes):
                         chave = int(comando[1])
                         busca(chave)
                     case 'i':
-                        pass
+                        insere()
+    print(f"As operações do arquivo '{arquivo_operacoes}' foram executadas com sucesso!")
     
 def modo_p():
     imprimirArvoreB(ARQ_BTREE)
 
 def main():
-
     if len(argv) == 1:
         print('uso:\ncriar árvore: python main.py -b\noperações: python main.py -e [caminho arquivo]\nimpressão da árvore: main.py -p')
         return
@@ -49,7 +49,7 @@ def main():
     elif argv[1] == '-e':
         modo_e(argv[2])
     elif argv[1] == '-p':
-        imprimirArvoreB(ARQ_BTREE)
+        modo_p()
 
 if __name__ == "__main__":
     main()

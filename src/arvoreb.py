@@ -1,5 +1,5 @@
 from src.constantes import *
-from typing import BinaryIO
+from typing import BinaryIO #tipagem de arquivo tipo dado
 from src.pagina import *
 from struct import *
 import os
@@ -57,9 +57,6 @@ def lePagina(rrn, arq):
     arq.seek(byte_offset)
 
     dados_bytes = arq.read(TAM_PAGE)
-    #print("RRN:", rrn)
-    #print("TAM_PAGE:", TAM_PAGE)
-    #print("Bytes lidos:", len(dados_bytes))
     dados = unpack(FORMATO_PAGE, dados_bytes)
 
     pag = Pagina() #cria objeto
@@ -134,7 +131,6 @@ def insereChavePromo(chave, offset, filhoD, pag):
 #================ÁRVORE================
 
 def buscaNaArvore(chave, rrn, arq): 
-    print(f"Buscando chave {chave} no RRN {rrn}")
     if rrn == NULO:
         return False, NULO, NULO
     else:
@@ -156,7 +152,7 @@ def insereChave(chave, offset, rrn_atual, arq):
         achou, pos = buscaNaPagina(chave, pag) 
 
     if achou: #True
-        raise ValueError("Chave duplicada")
+        print("Chave duplicada")
     
     chavePro, offsetPro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
     
@@ -168,7 +164,7 @@ def insereChave(chave, offset, rrn_atual, arq):
             escrevePagina(rrn_atual, pag, arq)
             return NULO, NULO, NULO, False
         else:
-            chavePro, offsetPro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, offset, pag, arq)
+            chavePro, offsetPro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, offsetPro, pag, arq) #offsetPro -> divisão em cascata
             escrevePagina(rrn_atual, pag, arq)
             escrevePagina(filhoDpro, novaPag, arq)
             return chavePro, offsetPro, filhoDpro, True
@@ -207,14 +203,13 @@ def criaIndice():
 
 #================OPERAÇÕES================
 
-def busca(chave): #DANDO ERRO, TA BUSCANDO RAIZ 0 E DPS FILHO -1
+def busca(chave): 
     '''trato os erros aq'''
     '''realiza a busca no arquivo btree.dat, pego o byte-offset do reg correspondente e acesso de forma direta no games.dat'''
     try:
         with open(ARQ_BTREE, 'rb') as arqBTree:
             print(f'Busca pelo registro de chave "{chave}"')
             rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
-            print("RRN RAIZ =", rrn_raiz)
             achou, rrn, pos = buscaNaArvore(chave, rrn_raiz, arqBTree) #true, rrn, pos 
         
             with open(ARQ_GAMES, 'rb') as arqGames:
@@ -226,9 +221,9 @@ def busca(chave): #DANDO ERRO, TA BUSCANDO RAIZ 0 E DPS FILHO -1
                     tam = int.from_bytes(arqGames.read(2),"little")
                     reg = arqGames.read(tam).decode()
 
-                    print(f'{reg} ({tam} bytes - offset {offset})')
+                    print(f'{reg} ({tam} bytes - offset {offset})\n')
                 else:
-                    print(f'Erro: chave {chave} não encontrada')
+                    print(f'Erro: chave "{chave}" não encontrada\n')
 
     except FileNotFoundError:
         print(f"Erro ao abrir '{ARQ_BTREE}'")

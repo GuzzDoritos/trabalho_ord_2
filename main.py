@@ -1,4 +1,5 @@
-from sys import argv, os
+import os
+from sys import argv
 from src.arvoreb import *
 from src.constantes import *
 
@@ -30,7 +31,8 @@ def modo_e(arquivo_operacoes):
                 buffer = arq_ops.readline().strip() 
                 match comando[0]:
                     case 'b':
-                        pass
+                        chave = int(comando[1])
+                        busca(chave)
                     case 'i':
                         pass
     
@@ -38,13 +40,12 @@ def modo_p():
     imprimirArvoreB(ARQ_BTREE)
 
 def main():
-    if argv[1] == '-b':
-        try:
-            with open(ARQ_GAMES, "rb", encoding='utf-8') as arq:
-                criaArvore(arq)
-        except FileNotFoundError:
-            print("Erro: O arquivo games.dat não pôde ser encontrado na pasta \"/data/\".")
 
+    if len(argv) == 1:
+        print('uso:\ncriar árvore: python main.py -b\noperações: python main.py -e [caminho arquivo]\nimpressão da árvore: main.py -p')
+        return
+    if argv[1] == '-b':
+        modo_b()
     elif argv[1] == '-e':
         modo_e(argv[2])
     elif argv[1] == '-p':

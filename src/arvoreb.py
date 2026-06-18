@@ -1,17 +1,40 @@
 from src.constantes import *
+from typing import BinaryIO
 from src.pagina import *
 from struct import *
 import os
 
-def criaArvore(arq): #gu
-    pass 
+def criaArvore(arqGames: BinaryIO, arqBTree: BinaryIO): 
+    
+    rrn_raiz = NULO # com 0 n vai, da pra tentar com -1
+    while True:
+        dados = leiaReg(arqGames)
+        if dados is None:
+            break
 
-def leiaReg(arq): #gu
-    pass 
+        chave, offset = dados #chave_reg e chave -> nomes trocados por causa de leiareg
+
+        rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
+    return rrn_raiz
+
+def leiaReg(arq: BinaryIO):
+    offset = arq.tell()
+    
+    tam_bytes = arq.read(2)
+    if not tam_bytes:
+        return None
+    
+    tam = int.from_bytes(tam_bytes, "little")
+    registro = arq.read(tam).decode("utf-8")
+    
+    registro = registro.split('|', 1)
+    chave = int(registro[0])
+
+    return chave, offset
 
 #================PÁGINA================
 
-def escrevePagina(rrn, pag, arq): #isa
+def escrevePagina(rrn, pag, arq):
     byte_offset = rrn * TAM_PAGE + TAM_HEADER #formula da prof
     arq.seek(byte_offset)
     #paginas.py, constroi os campos da pagina na ordem (vai incrementando)
@@ -24,7 +47,7 @@ def escrevePagina(rrn, pag, arq): #isa
     dados_bytes = pack(FORMATO_PAGE, *dados) #o * são varios argumentos separados
     arq.write(dados_bytes)
 
-def lePagina(rrn, arq): #isa
+def lePagina(rrn, arq):
     '''
     calcule o byte-offset da página a partir do rrn
     faça seek no arquivo árvore-B para o byte-offset calculado
@@ -34,6 +57,9 @@ def lePagina(rrn, arq): #isa
     arq.seek(byte_offset)
 
     dados_bytes = arq.read(TAM_PAGE)
+    #print("RRN:", rrn)
+    #print("TAM_PAGE:", TAM_PAGE)
+    #print("Bytes lidos:", len(dados_bytes))
     dados = unpack(FORMATO_PAGE, dados_bytes)
 
     pag = Pagina() #cria objeto
@@ -51,7 +77,7 @@ def lePagina(rrn, arq): #isa
 
     return pag
     
-def buscaNaPagina(chave, pag): #isa
+def buscaNaPagina(chave, pag): 
     pos = 0
     while pos < pag.numChaves and chave > pag.chaves[pos]:
         pos += 1
@@ -60,15 +86,32 @@ def buscaNaPagina(chave, pag): #isa
     else:
         return False, pos
 
-def novoRRN(arq): #isa
+def novoRRN(arq): 
     arq.seek(0, os.SEEK_END) #seek para o fim do arq #efinir o ponto de referência de onde o cursor de um arquivo será movido, para o 0 (final)
     byte_offset = arq.tell() #recebe offset atual, com o tell
     return ((byte_offset - TAM_HEADER)) // TAM_PAGE
 
-def divide(chave, filhoD, pag, arq): #gu
-    pass
+def divide(chave, filhoD, offset, pag: Pagina, arq):
+    insereChavePromo(chave, offset, filhoD, pag)
+    meio = ORDEM // 2
+    pNova = Pagina()
+    pNova.chaves = pag.chaves[meio+1:] + [NULO] * meio
+    pNova.offsets = pag.offsets[meio+1:] + [NULO] * meio
+    pNova.filhos = pag.filhos[meio+1:] + [NULO] * meio
+    pNova.numChaves = ORDEM - meio - 1
 
-def insereChavePromo(chave, offset, filhoD, pag): #isa 
+    chavePro = pag.chaves[meio]
+    offsetPro = pag.offsets[meio]
+    filhoDpro = novoRRN(arq)
+    
+    pag.chaves = pag.chaves[:meio] + [NULO] * (ORDEM - meio - 1)
+    pag.offsets = pag.offsets[:meio] + [NULO] * (ORDEM - meio - 1)
+    pag.filhos = pag.filhos[:meio+1] + [NULO] * (ORDEM - meio - 1)
+
+    pag.numChaves = meio
+    return chavePro, offsetPro, filhoDpro, pag, pNova
+
+def insereChavePromo(chave, offset, filhoD, pag): 
     #insere na pagina
     if pag.numChaves == ORDEM - 1: #estourou, ta cheia
         pag.chaves.append(NULO)
@@ -90,7 +133,8 @@ def insereChavePromo(chave, offset, filhoD, pag): #isa
 
 #================ÁRVORE================
 
-def buscaNaArvore(chave, rrn, arq): #isa
+def buscaNaArvore(chave, rrn, arq): 
+    print(f"Buscando chave {chave} no RRN {rrn}")
     if rrn == NULO:
         return False, NULO, NULO
     else:
@@ -102,11 +146,11 @@ def buscaNaArvore(chave, rrn, arq): #isa
         else:
             return buscaNaArvore(chave, pag.filhos[pos], arq) #recursiva
 
-def insereChave(chave, rrn_atual, arq): #isa
+def insereChave(chave, offset, rrn_atual, arq):
     if rrn_atual == NULO:
         chavePro = chave
         filhoDpro = NULO
-        return chavePro, filhoDpro, True
+        return chavePro, offset, filhoDpro, True
     else:
         pag = lePagina(rrn_atual, arq) 
         achou, pos = buscaNaPagina(chave, pag) 
@@ -114,39 +158,85 @@ def insereChave(chave, rrn_atual, arq): #isa
     if achou: #True
         raise ValueError("Chave duplicada")
     
-    chavePro, filhoDpro, promo = insereChave(chave, pag.filhos[pos], arq)
+    chavePro, offsetPro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
     
     if not promo:
-        return NULO, NULO, False
+        return NULO, NULO, NULO, False
     else:
         if pag.numChaves < ORDEM - 1: #se existe espaço para inserir
-            insereChavePromo(chave, filhoDpro, pag)
+            insereChavePromo(chavePro, offsetPro, filhoDpro, pag)
             escrevePagina(rrn_atual, pag, arq)
-            return NULO, NULO, False
+            return NULO, NULO, NULO, False
         else:
-            chavePro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, pag, arq)
+            chavePro, offsetPro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, offset, pag, arq)
             escrevePagina(rrn_atual, pag, arq)
             escrevePagina(filhoDpro, novaPag, arq)
-            return chavePro, filhoDpro, True
+            return chavePro, offsetPro, filhoDpro, True
 
 
-def insereNaArvore(chave, offset, rrn_atual, arq): #gu
-    pass
+def insereNaArvore(chave, offset, rrn_raiz, arq): 
+    chavePro, offsetPro, filhoDpro, promoção = insereChave(chave, offset, rrn_raiz, arq)
+    if promoção: #True
+        pNova = Pagina() #inicializa nova raiz/pagina
+        pNova.chaves[0] = chavePro #nova chave raiz
+        pNova.offsets[0] = offsetPro #precisa
+        pNova.filhos[0] = rrn_raiz #filho esquerdo é a raiz antiga
+        pNova.filhos[1] = filhoDpro #filho direito é a nova página criada
+
+        pNova.numChaves = 1 #TESTE SEM INCREMENTAR
+        rrn_nova = novoRRN(arq) #novo RRN para nova raiz
+        escrevePagina(rrn_nova, pNova, arq) #escreve nova raiz no arquivo
+        return rrn_nova
+    return rrn_raiz
 
 #================ÍNDICE================
 
 def criaIndice():
-    pass
+    '''trato os erros aq'''
+    try:
+        with open(ARQ_GAMES, 'rb') as arqGames:
+            with open(ARQ_BTREE, 'w+b') as arqBTree:
+                arqBTree.write(pack(FORMATO_HEADER, NULO)) #AQ TBM DA ERRO COM 0
+                rrn_raiz = criaArvore(arqGames, arqBTree)
+
+                arqBTree.seek(0)
+                arqBTree.write(pack(FORMATO_HEADER, rrn_raiz))
+        print("Índice criado com sucesso")
+    except FileNotFoundError:
+        print("Erro: O arquivo games.dat não pôde ser encontrado na pasta \"/data/\".")
 
 #================OPERAÇÕES================
 
-def busca(chave):
-    pass
+def busca(chave): #DANDO ERRO, TA BUSCANDO RAIZ 0 E DPS FILHO -1
+    '''trato os erros aq'''
+    '''realiza a busca no arquivo btree.dat, pego o byte-offset do reg correspondente e acesso de forma direta no games.dat'''
+    try:
+        with open(ARQ_BTREE, 'rb') as arqBTree:
+            print(f'Busca pelo registro de chave "{chave}"')
+            rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
+            print("RRN RAIZ =", rrn_raiz)
+            achou, rrn, pos = buscaNaArvore(chave, rrn_raiz, arqBTree) #true, rrn, pos 
+        
+            with open(ARQ_GAMES, 'rb') as arqGames:
+                if achou:
+                    pag = lePagina(rrn, arqBTree)
+                    offset = pag.offsets[pos]
+                    arqGames.seek(offset)
+
+                    tam = int.from_bytes(arqGames.read(2),"little")
+                    reg = arqGames.read(tam).decode()
+
+                    print(f'{reg} ({tam} bytes - offset {offset})')
+                else:
+                    print(f'Erro: chave {chave} não encontrada')
+
+    except FileNotFoundError:
+        print(f"Erro ao abrir '{ARQ_BTREE}'")
 
 def insere():
     pass
 
-#================ÁRVORE================
+#================IMPRIMIR================
 
 def imprimirArvoreB(arq_btree):
     pass

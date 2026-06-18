@@ -1,4 +1,4 @@
-from constantes import *
+from src.constantes import *
 
 class Pagina:
     def __init__(self) -> None:

@@ -5,17 +5,17 @@ from struct import *
 import os
 
 def criaArvore(arqGames: BinaryIO, arqBTree: BinaryIO): 
-    with open(ARQ_BTREE, 'wb') as btree:
-        rrn_raiz = NULO # com 0 n vai, da pra tentar com -1
-        while True:
-            dados = leiaReg(arqGames)
-            if dados is None:
-                break
+    
+    rrn_raiz = NULO # com 0 n vai, da pra tentar com -1
+    while True:
+        dados = leiaReg(arqGames)
+        if dados is None:
+            break
 
-            chave, offset = dados #chave_reg e chave -> nomes trocados por causa de leiareg
+        chave, offset = dados #chave_reg e chave -> nomes trocados por causa de leiareg
 
-            rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
-        return rrn_raiz
+        rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
+    return rrn_raiz
 
 def leiaReg(arq: BinaryIO):
     offset = arq.tell()
@@ -91,8 +91,25 @@ def novoRRN(arq):
     byte_offset = arq.tell() #recebe offset atual, com o tell
     return ((byte_offset - TAM_HEADER)) // TAM_PAGE
 
-def divide(chave, filhoD, pag, arq):
-    pass
+def divide(chave, filhoD, offset, pag: Pagina, arq):
+    insereChavePromo(chave, offset, filhoD, pag)
+    meio = ORDEM // 2
+    pNova = Pagina()
+    pNova.chaves = pag.chaves[meio+1:] + [NULO] * meio
+    pNova.offsets = pag.offsets[meio+1:] + [NULO] * meio
+    pNova.filhos = pag.filhos[meio+1:] + [NULO] * meio
+    pNova.numChaves = ORDEM - meio - 1
+
+    chavePro = pag.chaves[meio]
+    offsetPro = pag.offsets[meio]
+    filhoDpro = novoRRN(arq)
+    
+    pag.chaves = pag.chaves[:meio] + [NULO] * (ORDEM - meio - 1)
+    pag.offsets = pag.offsets[:meio] + [NULO] * (ORDEM - meio - 1)
+    pag.filhos = pag.filhos[:meio+1] + [NULO] * (ORDEM - meio - 1)
+
+    pag.numChaves = meio
+    return chavePro, offsetPro, filhoDpro, pag, pNova
 
 def insereChavePromo(chave, offset, filhoD, pag): 
     #insere na pagina
@@ -133,7 +150,7 @@ def insereChave(chave, offset, rrn_atual, arq):
     if rrn_atual == NULO:
         chavePro = chave
         filhoDpro = NULO
-        return chavePro, filhoDpro, True
+        return chavePro, offset, filhoDpro, True
     else:
         pag = lePagina(rrn_atual, arq) 
         achou, pos = buscaNaPagina(chave, pag) 
@@ -141,31 +158,28 @@ def insereChave(chave, offset, rrn_atual, arq):
     if achou: #True
         raise ValueError("Chave duplicada")
     
-    chavePro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
+    chavePro, offsetPro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
     
     if not promo:
-        return NULO, NULO, False
+        return NULO, NULO, NULO, False
     else:
         if pag.numChaves < ORDEM - 1: #se existe espaço para inserir
-            insereChavePromo(chave, offset, filhoDpro, pag)
+            insereChavePromo(chavePro, offsetPro, filhoDpro, pag)
             escrevePagina(rrn_atual, pag, arq)
-            return NULO, NULO, False
+            return NULO, NULO, NULO, False
         else:
-            print("DIVIDE CHAMADA")
-            return NULO, NULO, False
-            #chavePro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, pag, arq)
-            #escrevePagina(rrn_atual, pag, arq)
-            #escrevePagina(filhoDpro, novaPag, arq)
-            #return chavePro, filhoDpro, True
+            chavePro, offsetPro, filhoDpro, pag, novaPag = divide(chavePro, filhoDpro, offset, pag, arq)
+            escrevePagina(rrn_atual, pag, arq)
+            escrevePagina(filhoDpro, novaPag, arq)
+            return chavePro, offsetPro, filhoDpro, True
 
 
 def insereNaArvore(chave, offset, rrn_raiz, arq): 
-    chavePro, filhoDpro, promoção = insereChave(chave, offset, rrn_raiz, arq)
+    chavePro, offsetPro, filhoDpro, promoção = insereChave(chave, offset, rrn_raiz, arq)
     if promoção: #True
         pNova = Pagina() #inicializa nova raiz/pagina
         pNova.chaves[0] = chavePro #nova chave raiz
-        
-        pNova.offsets[0] = offset #precisa
+        pNova.offsets[0] = offsetPro #precisa
         pNova.filhos[0] = rrn_raiz #filho esquerdo é a raiz antiga
         pNova.filhos[1] = filhoDpro #filho direito é a nova página criada
 
@@ -217,7 +231,7 @@ def busca(chave): #DANDO ERRO, TA BUSCANDO RAIZ 0 E DPS FILHO -1
                     print(f'Erro: chave {chave} não encontrada')
 
     except FileNotFoundError:
-        print("Erro ao abrir '{ARQ_BTREE}'")
+        print(f"Erro ao abrir '{ARQ_BTREE}'")
 
 def insere():
     pass

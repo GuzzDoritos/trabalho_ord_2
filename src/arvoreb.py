@@ -152,7 +152,7 @@ def insereChave(chave, offset, rrn_atual, arq):
         achou, pos = buscaNaPagina(chave, pag) 
 
     if achou: #True
-        print("Chave duplicada")
+        raise ValueError(f'Erro: chave "{chave} duplicada')
     
     chavePro, offsetPro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
     
@@ -225,11 +225,17 @@ def busca(chave):
                 else:
                     print(f'Erro: chave "{chave}" não encontrada\n')
 
+
     except FileNotFoundError:
         print(f"Erro ao abrir '{ARQ_BTREE}'")
 
-def insere():
-    pass
+def insere(registro):
+    try:
+        #rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
+        pass
+
+    except ValueError as e: #trata o erro da chave duplicada em insereChave
+        print(e)
 
 #================IMPRIMIR================
 

@@ -13,8 +13,8 @@ def modo_e(arquivo_operacoes):
         return
     
     arquivos_necessarios = [
-        "data/games.dat", 
-        "data/btree.dat",
+        ARQ_GAMES, 
+        ARQ_BTREE,
         arquivo_operacoes
     ]
     
@@ -23,21 +23,28 @@ def modo_e(arquivo_operacoes):
             print(f"Erro: Arquivo necessário não encontrado ({caminho}). Encerrando.")
             return            
     
-    with open(ARQ_GAMES, "rb+") as arq_games:
-        with open(arquivo_operacoes, "r", encoding="utf-8") as arq_ops:
-            buffer = arq_ops.readline().strip()
-            while buffer:
-                comando = buffer.split(None, 1)
-                buffer = arq_ops.readline().strip() 
-                match comando[0]:
-                    case 'b':
-                        chave = int(comando[1])
-                        busca(chave)
-                    case 'i':
-                        insere()
-    print(f"As operações do arquivo '{arquivo_operacoes}' foram executadas com sucesso!")
+    with open(ARQ_GAMES, "rb+") as arqGames:
+        with open(ARQ_BTREE, "r+b") as arqBTree:
+            with open(arquivo_operacoes, "r", encoding="utf-8") as arqOps:
+                buffer = arqOps.readline().strip()
+                while buffer:
+                    comando = buffer.split(None, 1) 
+                    match comando[0]:
+                        case 'b':
+                            chave = int(comando[1])
+                            busca(chave)
+                        case 'i':
+                            registro = comando[1]
+                            insere(registro)
+
+                    buffer = arqOps.readline().strip()
+    print(f'As operações do arquivo "{arquivo_operacoes}" foram executadas com sucesso!')
     
 def modo_p():
+    if not os.path.exists(ARQ_BTREE):
+        print("Erro: Arquivo btree.dat não encontrado. Encerrando.")
+        return
+
     imprimirArvoreB(ARQ_BTREE)
 
 def main():

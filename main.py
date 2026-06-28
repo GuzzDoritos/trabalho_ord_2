@@ -32,10 +32,10 @@ def modo_e(arquivo_operacoes):
                     match comando[0]:
                         case 'b':
                             chave = int(comando[1])
-                            busca(chave)
+                            busca(chave, arqBTree, arqGames)
                         case 'i':
                             registro = comando[1]
-                            insere(registro)
+                            insere(registro, arqBTree, arqGames)
 
                     buffer = arqOps.readline().strip()
     print(f'As operações do arquivo "{arquivo_operacoes}" foram executadas com sucesso!')

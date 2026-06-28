@@ -51,7 +51,7 @@ def lePagina(rrn, arq):
     '''
     calcule o byte-offset da página a partir do rrn
     faça seek no arquivo árvore-B para o byte-offset calculado
-    escreva pag no arquivo árvore-B
+    leia pag do arquivo árvore-B
     '''
     byte_offset = rrn * TAM_PAGE + TAM_HEADER #formula da prof
     arq.seek(byte_offset)
@@ -152,7 +152,7 @@ def insereChave(chave, offset, rrn_atual, arq):
         achou, pos = buscaNaPagina(chave, pag) 
 
     if achou: #True
-        raise ValueError(f'Erro: chave "{chave} duplicada')
+        raise ValueError(f'Erro: chave "{chave}" duplicada')
     
     chavePro, offsetPro, filhoDpro, promo = insereChave(chave, offset, pag.filhos[pos], arq)
     
@@ -199,45 +199,104 @@ def criaIndice():
                 arqBTree.write(pack(FORMATO_HEADER, rrn_raiz))
         print("Índice criado com sucesso")
     except FileNotFoundError:
-        print("Erro: O arquivo games.dat não pôde ser encontrado na pasta \"/data/\".")
+        print(f"Erro: O arquivo {ARQ_GAMES} não pôde ser encontrado.")
 
 #================OPERAÇÕES================
 
-def busca(chave): 
-    '''trato os erros aq'''
+def busca(chave, arqBTree, arqGames): 
     '''realiza a busca no arquivo btree.dat, pego o byte-offset do reg correspondente e acesso de forma direta no games.dat'''
     try:
-        with open(ARQ_BTREE, 'rb') as arqBTree:
-            print(f'Busca pelo registro de chave "{chave}"')
-            rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
-            achou, rrn, pos = buscaNaArvore(chave, rrn_raiz, arqBTree) #true, rrn, pos 
+        print(f'Busca pelo registro de chave "{chave}"')
+        arqBTree.seek(0)
+        rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
+        achou, rrn, pos = buscaNaArvore(chave, rrn_raiz, arqBTree) #true, rrn, pos 
         
-            with open(ARQ_GAMES, 'rb') as arqGames:
-                if achou:
-                    pag = lePagina(rrn, arqBTree)
-                    offset = pag.offsets[pos]
-                    arqGames.seek(offset)
+        if achou:
+            pag = lePagina(rrn, arqBTree)
+            offset = pag.offsets[pos]
+            arqGames.seek(offset)
 
-                    tam = int.from_bytes(arqGames.read(2),"little")
-                    reg = arqGames.read(tam).decode()
+            tam = int.from_bytes(arqGames.read(2),"little")
+            reg = arqGames.read(tam).decode("utf-8")
 
-                    print(f'{reg} ({tam} bytes - offset {offset})\n')
-                else:
-                    print(f'Erro: chave "{chave}" não encontrada\n')
+            print(f'{reg} ({tam} bytes - offset {offset})\n')
+        else:
+            print(f'Erro: chave "{chave}" não encontrada\n')
 
+    except Exception as e:
+        print(f"Erro na busca: {e}")
 
-    except FileNotFoundError:
-        print(f"Erro ao abrir '{ARQ_BTREE}'")
-
-def insere(registro):
+def insere(registro, arqBTree, arqGames):
     try:
-        #rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
-        pass
+        campos = registro.split('|', 1)
+        chave = int(campos[0])
+        
+        # verifica se a chave já existe
+        arqBTree.seek(0)
+        rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
+        achou, _, _ = buscaNaArvore(chave, rrn_raiz, arqBTree)
+        
+        if achou:
+            print(f'Erro: chave "{chave}" duplicada\n')
+            return
+            
+        # escreve no final do games.dat
+        arqGames.seek(0, os.SEEK_END)
+        offset = arqGames.tell()
+        
+        reg_bytes = registro.encode("utf-8")
+        tam = len(reg_bytes)
+        arqGames.write(tam.to_bytes(2, "little"))
+        arqGames.write(reg_bytes)
+        
+        # insere na árvore B
+        novo_rrn_raiz = insereNaArvore(chave, offset, rrn_raiz, arqBTree)
+        
+        # atualiza cabeçalho se a raiz mudou
+        if novo_rrn_raiz != rrn_raiz:
+            arqBTree.seek(0)
+            arqBTree.write(pack(FORMATO_HEADER, novo_rrn_raiz))
+            
+        print(f'Inserção do registro de chave "{chave}"')
+        print(f'{registro} ({tam} bytes - offset {offset})\n')
 
-    except ValueError as e: #trata o erro da chave duplicada em insereChave
-        print(e)
+    except Exception as e:
+        print(f"Erro na inserção: {e}")
 
 #================IMPRIMIR================
 
 def imprimirArvoreB(arq_btree):
-    pass
+    try:
+        with open(arq_btree, 'rb') as arqBTree:
+            arqBTree.seek(0, os.SEEK_END)
+            tam_arquivo = arqBTree.tell()
+            
+            if tam_arquivo < TAM_HEADER:
+                return
+                
+            arqBTree.seek(0)
+            rrn_raiz = unpack(FORMATO_HEADER, arqBTree.read(TAM_HEADER))[0]
+            
+            total_paginas = (tam_arquivo - TAM_HEADER) // TAM_PAGE
+            
+            for rrn in range(total_paginas):
+                if rrn == rrn_raiz:
+                    print('- - - - - - - - - - Raiz - - - - - - - - - -')
+                    
+                pag = lePagina(rrn, arqBTree)
+                print(f'Página {rrn}:')
+                
+                str_chaves = " | ".join(str(c) for c in pag.chaves)
+                str_offsets = " | ".join(str(o) for o in pag.offsets)
+                str_filhos = " | ".join(str(f) for f in pag.filhos)
+                
+                print(f'Chaves = {str_chaves}')
+                print(f'Offsets = {str_offsets}')
+                print(f'Filhos = {str_filhos}')
+                
+                if rrn == rrn_raiz:
+                    print('- - - - - - - - - - - - - - - - -- - - - - -')
+                else:
+                    print()
+    except Exception as e:
+        print(f"Erro ao imprimir árvore: {e}")
